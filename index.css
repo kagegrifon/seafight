@@ -6,6 +6,8 @@
     display: none;
     flex-direction: column;
     min-height: 100vh;
+    background-image: url('assets/img/main_background.jpg');
+    background-size: cover;
 } 
 
 .screen-start {
@@ -32,17 +34,21 @@
 
 .start-button {
     padding: 20px;
-    border-radius: 5px;
+    border-radius: 35px;
     border-style: outset;
-    font-size: 24px;
+    font-size: 38px;
+    background-color: rgba(178, 205, 207, 100);
+    width: 200px;
+    text-align: center;
 }
 
 .start-button:hover {
-    background-color: rgba(178, 205, 207, 96);
+    color: red;
 }
 
 .start-button:active {
     border-style: inset;
+    color: red;
 }
 
 .field {
