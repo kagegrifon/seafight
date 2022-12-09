@@ -1,0 +1,82 @@
+* {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.screen {
+    display: none;
+    flex-direction: column;
+    min-height: 100vh;
+} 
+
+.screen-start {
+    background-color: bisque;
+}
+
+
+.screen-place {
+    background: linear-gradient(0deg, rgba(2,0,36,1) 0%, rgba(9,9,121,0.9612978980654762) 35%, rgba(0,212,255,1) 100%); 
+}
+
+.screen-fight {
+
+}
+
+.screen.active {
+    display: flex;
+}
+
+.start-panel {
+    margin: auto;
+    padding: 20px;
+}
+
+.start-button {
+    padding: 20px;
+    border-radius: 5px;
+    border-style: outset;
+    font-size: 24px;
+}
+
+.start-button:hover {
+    background-color: rgba(178, 205, 207, 96);
+}
+
+.start-button:active {
+    border-style: inset;
+}
+
+.field {
+
+}
+
+.ships {
+
+}
+
+.ship {
+
+}
+
+.ship-body {
+
+}
+
+.counter {
+
+}
+
+.ship-1-size {
+
+}
+
+.ship-2-size {
+
+}
+
+.ship-3-size {
+
+}
+
+.ship-4-size {
+
+}
