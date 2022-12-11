@@ -15,36 +15,21 @@
         </div>
     </div>
     <div class="screen screen-place">
-        <div class="field"></div>
-        <div class="ships">
-            <div class="ship ship-1-size"><div class="ship-body"></div><p class="counter">4</p></div>
-            <div class="ship ship-2-size"><div class="ship-body"></div><p class="counter">3</p></div>
-            <div class="ship ship-3-size"><div class="ship-body"></div><p class="counter">2</p></div>
-            <div class="ship ship-4-size"><div class="ship-body"></div><p class="counter">1</p></div>
+        <div class="container">
+            <div class="field"></div>
+            <div class="ships">
+                <div class="ship ship-1-size"><div class="ship-body"></div><p class="counter">4</p></div>
+                <div class="ship ship-2-size"><div class="ship-body"></div><p class="counter">3</p></div>
+                <div class="ship ship-3-size"><div class="ship-body"></div><p class="counter">2</p></div>
+                <div class="ship ship-4-size"><div class="ship-body"></div><p class="counter">1</p></div>
+            </div>
         </div>
     </div>
     <div class="screen screen-fight"></div>
 </body>
-<script>
-    const SCREENS_NAMES = [
-        'start',
-        'place',
-        'fight'
-    ]
-    const startButton = document.getElementById('start-button');
-    const screens = Array.from(document.querySelectorAll('.screen'));
-    
-    const screenByName = SCREENS_NAMES.reduce((acc, screenName) => {
-        acc[screenName] = screens.find(s => s.classList.contains(`screen-${screenName}`))
-        return acc;
-    }, {})
+<!-- <script src="./js/placeScreen.js" type="module"></script>
+<script src="./js/startScreen.js" type="module"></script>
+<script src="./js/share/constant.js" type="module"></script> -->
 
-    const goToPlaceScreen = () => {
-        const curScreen = screens.find(s => s.classList.contains('active'))
-        screenByName['fight'].classList.add('active')
-        curScreen.classList.remove('active')
-    }
-
-    startButton.addEventListener('click', goToPlaceScreen)
-</script>
+<script src="index.js" type="module" ></script>
 </html>
