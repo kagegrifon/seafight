@@ -3,3 +3,5 @@ export const SCREENS_NAMES = [
     'place',
     'fight'
 ]
+
+export const FIRST_ALPHABETH_CHAR = 'A'
