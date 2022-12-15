@@ -1,4 +1,4 @@
-import { FIRST_ALPHABETH_CHAR } from './share/constant.js'
+import { FIRST_ALPHABETH_CHAR } from '../../common/constant.js'
 
 const fieldNode = document.getElementById('field');
 
@@ -23,6 +23,6 @@ function drawField(rootNode) {
     }
 }
 
-export const initPlaceScreen = function() {
+export const initDispositionScreen = function() {
     drawField(fieldNode);
 }

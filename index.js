@@ -1,5 +1,5 @@
-import { initPlaceScreen } from './js/placeScreen.js'
-import { initStartScreen } from './js/startScreen.js'
+import { initDispositionScreen } from './page/disposition/disposition.js'
+import { initStartScreen } from './page/start/start.js'
 
 initStartScreen();
-initPlaceScreen()
+initDispositionScreen()

@@ -1,4 +1,4 @@
-import { SCREENS_NAMES } from './share/constant.js'
+import { SCREENS_NAMES } from '../../common/constant.js'
 
 export function initStartScreen() {
     const startButton = document.getElementById('start-button');

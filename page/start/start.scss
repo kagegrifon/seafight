@@ -1,0 +1,24 @@
+
+.start-panel {
+    margin: auto;
+    padding: 20px;
+}
+
+.start-button {
+    padding: 20px;
+    border-radius: 35px;
+    border-style: outset;
+    font-size: 38px;
+    background-color: rgba(178, 205, 207, 100);
+    width: 200px;
+    text-align: center;
+}
+
+.start-button:hover {
+    color: red;
+}
+
+.start-button:active {
+    border-style: inset;
+    color: red;
+}
