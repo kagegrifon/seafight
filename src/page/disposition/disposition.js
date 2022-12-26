@@ -102,7 +102,7 @@ function updateMap(map, ship) {
     let shipXCoord = ship.x;
 
     for (let i=0; i < ship.shipSize; i++) {
-        = ship.x + incrementByDirection[ship.direction](i)
+        // = ship.x + incrementByDirection[ship.direction](i)
         map[ship.y[ship.x]] = shipSize;
 
         pointMatrix.forEach((subArray, yIndex) => {
@@ -131,5 +131,5 @@ function updateMap(map, ship) {
 
 export const initDispositionScreen = function() {
     drawField(fieldNode);
-    const mapOfShipDisposition = createShipDisposition();
+    // const mapOfShipDisposition = createShipDisposition();
 }
