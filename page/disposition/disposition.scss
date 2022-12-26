@@ -36,26 +36,11 @@ $magentoso: #fc2c71;
       border: 2px solid #00f;
       background: rgba(0,0,255,.05);
 
-      .ship-body {
+      .ship-section {
         height: $cellSize;
+        width: $cellSize;
       }
     }
-  }
-  
-  .ship-1-size .ship-body {
-    width: $cellSize;
-  }
-  
-  .ship-2-size .ship-body {
-    width: $cellSize * 2;
-  }
-  
-  .ship-3-size .ship-body {
-    width: $cellSize * 3;
-  }
-  
-  .ship-4-size .ship-body {
-    width: $cellSize * 4;
   }
 
   .controls {
@@ -145,10 +130,6 @@ $magentoso: #fc2c71;
           rgba(255,255,255,.5) 0 12px 5px inset,
           darken($magentoso,30%) 0 -12px 5px inset,
           rgba(0,0,0,.8) 0 4px 8px;
-    }
-
-    .turn-button {
-      background-image: url("../../assets/svg/autoPlace.svg");
     }
   }
 }
