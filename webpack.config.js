@@ -9,6 +9,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, 'public'),
     filename: 'bundle.[contenthash].js',
+    assetModuleFilename: path.join('images', '[name].[contenthash][ext]'),
   },
   devtool: NODE_ENV === 'development' ? "inline-source-map" : null,
   watch: NODE_ENV === 'development',
@@ -35,8 +36,15 @@ module.exports = {
         use: 'html-loader'
       },
       {
-        test: /\.(jpg|png|svg|jpeg|gif)$/,
+        test: /\.(jpg|png|jpeg|gif)$/,
         type: 'asset/resource'
+      },
+      {
+        test: /\.svg$/,
+        type: 'asset/resource',
+        generator: {
+          filename: path.join('icons', '[name].[contenthash][ext]'),
+        }
       }
     ],
   },
@@ -46,8 +54,6 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       template: path.join(__dirname, 'src', 'template.html'), filename: 'index.html'
-
-
     })
   ],
 }
