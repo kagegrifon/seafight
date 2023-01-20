@@ -30,7 +30,7 @@ function drawField(rootNode) {
             }
 
             if (y === 0 && x !== 0) {
-                cellNode.innerText = x
+                cellNode.innerText = String(x)
             }
             
             rootNode.append(cellNode)
@@ -103,7 +103,7 @@ function updateMap(map, ship) {
 
     for (let i=0; i < ship.shipSize; i++) {
         // = ship.x + incrementByDirection[ship.direction](i)
-        map[ship.y[ship.x]] = shipSize;
+        map[ship.y[ship.x]] = ship.shipSize;
 
         pointMatrix.forEach((subArray, yIndex) => {
             subArray.forEach((_, xIndex) => {
