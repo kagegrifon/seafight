@@ -1,3 +1,4 @@
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 const path = require('path')
 
 const NODE_ENV = process.env.NODE_ENV || 'development'
@@ -7,7 +8,7 @@ module.exports = {
   entry: './src/index.ts',
   output: {
     path: path.resolve(__dirname, 'public'),
-    filename: 'bundle.js',
+    filename: 'bundle.[contenthash].js',
   },
   devtool: NODE_ENV === 'development' ? "inline-source-map" : null,
   watch: NODE_ENV === 'development',
@@ -28,10 +29,25 @@ module.exports = {
           // Compiles Sass to CSS
           "sass-loader",
         ],
+      },
+      {
+        test: /\.html$/,
+        use: 'html-loader'
+      },
+      {
+        test: /\.(jpg|png|svg|jpeg|gif)$/,
+        type: 'asset/resource'
       }
     ],
   },
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
   },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: path.join(__dirname, 'src', 'template.html'), filename: 'index.html'
+
+
+    })
+  ],
 }

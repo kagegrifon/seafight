@@ -1,6 +1,5 @@
 import { FIRST_ALPHABETH_CHAR } from '../../common/constant.js'
 
-const fieldNode = document.getElementById('field');
 const FIELD_MAP_TEMPLATE = [
     Array(10).fill(0).map(() => Array(10).fill(0))
 ]
@@ -15,6 +14,12 @@ const incrementByDirection = {
         x: (x) => x,
         y: (y) => y + 1,
     }
+}
+
+export const initDispositionScreen = function() {
+    const fieldNode = document.getElementById('field');
+    drawField(fieldNode);
+    // const mapOfShipDisposition = createShipDisposition();
 }
 
 function drawField(rootNode) {
@@ -129,7 +134,3 @@ function updateMap(map, ship) {
     }
 }
 
-export const initDispositionScreen = function() {
-    drawField(fieldNode);
-    // const mapOfShipDisposition = createShipDisposition();
-}

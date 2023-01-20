@@ -18,6 +18,6 @@ export function initStartScreen() {
         screenByName[screenName].classList.add('active')
         curScreen.classList.remove('active')
     }
-
+    
     startButton.addEventListener('click', () => setScreenActive('place'))
 }
