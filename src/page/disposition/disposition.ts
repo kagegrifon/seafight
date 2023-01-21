@@ -1,11 +1,11 @@
-import { FIRST_ALPHABETH_CHAR } from '../../common/constant.js'
+import { FIRST_ALPHABETH_CHAR } from '../../common/constant'
 
 const FIELD_MAP_TEMPLATE = [
     Array(10).fill(0).map(() => Array(10).fill(0))
 ]
 const SHIP_DIRECTION = ['horizontal', 'vertical']
 
-const incrementByDirection = {
+export const incrementByDirection = {
     horizontal: {
         x: (x) => x + 1,
         y: (y) => y,
