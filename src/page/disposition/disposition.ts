@@ -26,7 +26,6 @@ export const initDispositionScreen = function () {
     drawField(fieldNode);
     const mapOfShipDisposition = createShipDisposition();
     placeShipByDisposition(mapOfShipDisposition, fieldNode)
-    console.log({ mapOfShipDisposition })
 }
 
 function drawField(rootNode: HTMLElement) {
