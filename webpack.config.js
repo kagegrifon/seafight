@@ -10,6 +10,7 @@ module.exports = {
     path: path.resolve(__dirname, 'public'),
     filename: 'bundle.[contenthash].js',
     assetModuleFilename: path.join('images', '[name].[contenthash][ext]'),
+    clean: true,
   },
   devtool: NODE_ENV === 'development' ? "inline-source-map" : null,
   watch: NODE_ENV === 'development',
@@ -49,6 +50,7 @@ module.exports = {
     ],
   },
   resolve: {
+    modules: [path.resolve(__dirname, 'src'), 'node_modules'],
     extensions: ['.tsx', '.ts', '.js'],
   },
   plugins: [
