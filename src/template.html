@@ -12,45 +12,29 @@
 </head>
 
 <body>
-    <div class="screen screen-start active">
+    <div class="screen screen-start" id="screen-start">
         <div class="start-panel">
             <button class="start-button" id="start-button">Start</button>
         </div>
     </div>
-    <div class="screen screen-place">
+
+    <div class="screen screen-place" id="screen-place">
         <div class="container">
-
             <div class="field" id="field"></div>
-            <!-- <div class="ships">
-                <div class="ship ship-1-size">
-                    <div class="ship-section"></div>
-                </div>
-                <div class="ship ship-2-size">
-                    <div class="ship-section"></div>
-                    <div class="ship-section"></div>
-                </div>
-                <div class="ship ship-3-size">
-                    <div class="ship-section"></div>
-                    <div class="ship-section"></div>
-                    <div class="ship-section"></div>
-                    <div class="ship ship-4-size">
-                        <div class="ship-section"></div>
-                        <div class="ship-section"></div>
-                        <div class="ship-section"></div>
-                        <div class="ship-section"></div>
-                    </div>
-                </div>
-
-            </div> -->
         </div>
         <div class="controls">
-            <button class="button round-button turn-button" id="turnShipButton"><img
-                    src="assets/svg/autoPlace.svg"></button>
+            <!-- <button class="button round-button turn-button" id="turnShipButton"><img
+                    src="assets/svg/autoPlace.svg"></button> -->
             <button class="button round-button auto-place-button" id="autoPlaceButton">auto</button>
             <button class="button round-button start-fight-button" id="startFightButton">start</button>
         </div>
     </div>
-    <div class="screen screen-fight"></div>
+
+    <div class="screen screen-fight" id="screen-place">
+        <div class="field" id="userDispositionField"></div>
+        <div class="field" id="enemyDispositionField"></div>
+    </div>
+
 </body>
 
 </html>

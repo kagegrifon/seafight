@@ -1,5 +1,5 @@
 import { Ship } from 'common/type'
-import { incrementByDirection, isPositionFit } from './disposition'
+import { incrementByDirection, isPositionFit } from './map'
 
 describe('incrementByDirection', () => {
 

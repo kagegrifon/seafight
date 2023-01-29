@@ -13,7 +13,7 @@ module.exports = {
     clean: true,
   },
   devtool: NODE_ENV === 'development' ? "inline-source-map" : null,
-  watch: NODE_ENV === 'development',
+  // watch: NODE_ENV === 'development',
   module: {
     rules: [
       {
