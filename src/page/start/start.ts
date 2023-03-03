@@ -1,9 +1,9 @@
-import { PageScript } from 'common/type';
+import { PageScript } from "page/type";
 
 export const initStartScreen: PageScript = function ({ onGoNext }) {
-    const startButton = document.getElementById('start-button');
+    const startButton = document.getElementById("start-button");
 
-    startButton.addEventListener('click', () => {
-        onGoNext()
-    })
-}
+    startButton.addEventListener("click", () => {
+        onGoNext();
+    });
+};

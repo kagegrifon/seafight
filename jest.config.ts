@@ -7,7 +7,8 @@ const config: Config = {
     '^.+\\.ts?$': 'ts-jest',
   },
   transformIgnorePatterns: ['<rootDir>/node_modules/'],
-  testPathIgnorePatterns: ["<rootDir>/dist/", "<rootDir>/node_modules/"]
+  testPathIgnorePatterns: ["<rootDir>/dist/", "<rootDir>/node_modules/"],
+  moduleDirectories: ['node_modules', 'src']
 };
 
 export default config

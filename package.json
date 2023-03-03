@@ -20,7 +20,10 @@
   "homepage": "https://github.com/kagegrifon/seafight#readme",
   "devDependencies": {
     "@types/jest": "^29.2.6",
+    "@typescript-eslint/eslint-plugin": "^5.53.0",
+    "@typescript-eslint/parser": "^5.53.0",
     "css-loader": "^6.7.3",
+    "eslint": "^8.35.0",
     "html-loader": "^4.2.0",
     "html-webpack-plugin": "^5.5.0",
     "jest": "^29.3.1",

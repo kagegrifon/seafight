@@ -2,17 +2,18 @@ export type SCREENS_NAMES = 'start' | 'place' | 'fight'
 
 export type AxisDirection = 'vertical' | 'horizontal'
 
-export type FieldMap = Array<Array<number>>
+export type ShootResult = 'missed' | 'hit' | 'kill'
 
-export interface Ship {
+export interface Cell {
     x: number,
-    y: number,
-    direction: AxisDirection,
-    shipSize: number,
+    y: number
 }
 
-export type State = {
-    disposition: FieldMap
+export interface ShipCell extends Cell {
+    isHit: boolean
 }
 
-export type PageScript = (params: { state: State, onGoNext?: Function }) => void
+export interface Enemy {
+    chooseNextCell(): Cell
+    processingResult({ cell, result }: { cell: Cell, result: ShootResult }): void
+}

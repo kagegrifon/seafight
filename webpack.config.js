@@ -1,3 +1,6 @@
+/* eslint-disable no-undef */
+/* eslint-disable @typescript-eslint/no-var-requires */
+
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const path = require('path')
 
@@ -12,7 +15,7 @@ module.exports = {
     assetModuleFilename: path.join('images', '[name].[contenthash][ext]'),
     clean: true,
   },
-  devtool: NODE_ENV === 'development' ? "inline-source-map" : null,
+  // devtool: NODE_ENV === 'development' ? "inline-source-map" : null,
   // watch: NODE_ENV === 'development',
   module: {
     rules: [
@@ -62,6 +65,7 @@ module.exports = {
     static: {
       directory: path.join(__dirname, 'public'),
     },
+    hot: true,
     compress: true,
     port: 9000,
     open: true,

@@ -9,5 +9,9 @@ export const switchActiveScreen = (screenName: SCREENS_NAMES) => {
 
     const curActiveScreen = document.querySelector('[id^=screen-].active')
     newActiveScreen.classList.add('active')
-    curActiveScreen.classList.remove('active')
+
+    if (curActiveScreen) {
+        curActiveScreen.classList.remove('active')
+    }
+
 }

@@ -1,0 +1,53 @@
+.screen-fight {
+    justify-content: center;
+
+    .battle-zone {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+
+        .user-field {
+            margin-right: 50px;
+            backdrop-filter: blur(20px);
+        }
+
+        .enemy-field {
+            backdrop-filter: blur(20px);
+
+            .ship-field-cell {
+                font-size: 0;
+
+                &:hover {
+                    background: red;
+                    cursor: crosshair;
+                }
+
+                &.missed {
+                    pointer-events: none;
+
+                    &::before {
+                        content: '';
+                        display: block;
+                        width: 3px;
+                        height: 3px;
+                        background: black;
+                        border-radius: 50%;
+                    }
+                }
+
+                &.catch {
+                    pointer-events: none;
+
+                    &::before {
+                        content: 'X';
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 20px;
+                    }
+                }
+            }
+        }
+    }
+}
