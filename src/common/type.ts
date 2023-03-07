@@ -1,7 +1,5 @@
 import { IShootOnMapResult } from "entity/map";
 
-export type ISCREENS_NAMES = "start" | "place" | "fight";
-
 export type IAxisDirection = "vertical" | "horizontal";
 
 export type IShootResult = "missed" | "hit" | "kill";

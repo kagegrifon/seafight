@@ -1,20 +1,4 @@
 import { IPageScript } from "page/type";
-import { ISCREENS_NAMES } from "./type";
-
-export const switchActiveScreen = (screenName: ISCREENS_NAMES) => {
-    const newActiveScreen = document.getElementById(`screen-${screenName}`);
-
-    if (!newActiveScreen) {
-        throw Error(`Something went wrong, no ${screenName} screen in layout`);
-    }
-
-    const curActiveScreen = document.querySelector("[id^=screen-].active");
-    newActiveScreen.classList.add("active");
-
-    if (curActiveScreen) {
-        curActiveScreen.classList.remove("active");
-    }
-};
 
 export function getCloneOfTemplate(templateId: string) {
     const template = document.getElementById(templateId);
