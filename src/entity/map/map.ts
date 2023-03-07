@@ -1,20 +1,20 @@
 import { SHIPS_VARIANTS } from "common/constant";
-import { Cell } from "common/type";
-import { quickObjectCopy } from "common/utils";
+import { ICell, IShootResult } from "common/type";
+import { get2DMatrix, quickObjectCopy } from "common/utils";
 import { Ship } from "./Ship";
 
-const FIELD_MAP_TEMPLATE: number[][] = Array(10)
-    .fill(0)
-    .map(() => Array(10).fill(0));
+const FIELD_MAP_TEMPLATE: number[][] = get2DMatrix({
+    xSize: 10,
+    ySize: 10,
+    prefilled: 0,
+});
 
 const COORD_DELIMETER = "-";
 const CELL_DELIMENTER = "||";
 
-export function getPointsAround(point: Cell) {
+export function getPointsAround(point: ICell) {
     const { x: centralX, y: centralY } = point;
-    const pointMatrix = Array(3)
-        .fill(0)
-        .map(() => Array(3).fill(0));
+    const pointMatrix = get2DMatrix({ xSize: 3, ySize: 3, prefilled: 0 });
 
     pointMatrix.forEach((subArray, yIndex) => {
         subArray.forEach((_, xIndex) => {
@@ -28,50 +28,57 @@ export function getPointsAround(point: Cell) {
     return pointMatrix;
 }
 
-export type CellState = "empty" | "hit" | "notAllowed";
-type ShipCode = string;
+export type ICellState = "empty" | "hit" | "notAllowed";
+export type IShipCode = string;
 
-export interface SeaTableItem {
-    shipCode?: ShipCode;
-    state: CellState;
+export interface ISeaTableItem {
+    shipCode?: IShipCode;
+    state: ICellState;
 }
 
-export type SeaTable = Array<Array<SeaTableItem>>;
+export type ISeaTable = Array<Array<ISeaTableItem>>;
 
-type PrefilledDataConstructor = {
-    table: SeaTable;
+type IPrefilledDataConstructor = {
+    table: ISeaTable;
 };
 
-export type ShipsHash = {
-    [shipCode: ShipCode]: Ship;
+export type IShipsHash = {
+    [shipCode: IShipCode]: Ship;
 };
 
-type WithRandomShipsConstructor = { withRandomShips: boolean };
+export type IShootOnMapResult = {
+    shootResult: IShootResult;
+    killedShip?: Ship;
+};
+
+type IWithRandomShipsConstructor = { withRandomShips: boolean };
 
 export class SeaMap {
-    table: SeaTable;
-    shipsHash: ShipsHash;
+    table: ISeaTable;
+    shipsHash: IShipsHash;
 
     constructor();
-    constructor(withRandomShips: WithRandomShipsConstructor);
-    constructor(prefilledData: PrefilledDataConstructor);
+    constructor(withRandomShips: IWithRandomShipsConstructor);
+    constructor(prefilledData: IPrefilledDataConstructor);
 
     constructor(
-        inputData?: PrefilledDataConstructor | WithRandomShipsConstructor
+        inputData?: IPrefilledDataConstructor | IWithRandomShipsConstructor
     ) {
         this.shipsHash = {};
 
         if (!inputData) {
-            this.table = this.createNewTable();
+            this.table = SeaMap.createNewEmptyTable();
 
             return;
         }
 
         if ("withRandomShips" in inputData) {
             if (inputData.withRandomShips) {
+                this.table = SeaMap.createNewEmptyTable();
+
                 this.createRandomShipDisposition();
             } else {
-                this.table = this.createNewTable();
+                this.table = SeaMap.createNewEmptyTable();
             }
 
             return;
@@ -86,31 +93,28 @@ export class SeaMap {
         throw Error("Unexpected parameters in SeaMap constructor");
     }
 
-    createNewTable(): SeaTable {
+    static createNewEmptyTable(): ISeaTable {
         return quickObjectCopy(FIELD_MAP_TEMPLATE).map((subArr) =>
             subArr.map(() => ({ state: "empty" }))
         );
     }
 
     createRandomShipDisposition() {
-        this.table = this.createNewTable();
-        this.shipsHash = {};
-
         SHIPS_VARIANTS.forEach((size) => {
-            let ship = Ship.getRandomShipParams(size);
+            let ship = Ship.getRandomShip(size);
             let isCorrectPositon = this.isPositionFit(ship);
 
             while (!isCorrectPositon) {
-                ship = Ship.getRandomShipParams(size);
+                ship = Ship.getRandomShip(size);
                 isCorrectPositon = this.isPositionFit(ship);
             }
 
-            this.placeShip(ship);
+            this.placeShip({ ship });
         });
     }
 
-    private createFromInputData(inputData: PrefilledDataConstructor) {
-        const shipCodes = new Set<ShipCode>();
+    private createFromInputData(inputData: IPrefilledDataConstructor) {
+        const shipCodes = new Set<IShipCode>();
 
         this.table = inputData.table.map((row) =>
             row.map((cell) => {
@@ -127,20 +131,21 @@ export class SeaMap {
         });
     }
 
-    getShipNameByCells(cells: Cell[]) {
+    // TODO вынести в отдельный класс
+    static getShipNameByCells(cells: ICell[]) {
         return cells
             .map(({ x, y }) => `${x}${COORD_DELIMETER}${y}`)
             .join(CELL_DELIMENTER);
     }
 
-    getCellsFromShipCode(shipCode: ShipCode): Cell[] {
+    getCellsFromShipCode(shipCode: IShipCode): ICell[] {
         return shipCode.split(CELL_DELIMENTER).map((cell) => {
             const [x, y] = cell.split(COORD_DELIMETER).map((v) => +v);
             return { x, y };
         });
     }
 
-    getTableCell(point: Cell): SeaTableItem | undefined {
+    getTableCell(point: ICell): ISeaTableItem | undefined {
         return this.table?.[point.y]?.[point.x];
     }
 
@@ -153,30 +158,37 @@ export class SeaMap {
         return shipCells.every((cell) => this.isEmptyPoint(cell));
     }
 
-    isEmptyPoint(point: Cell) {
+    isEmptyPoint(point: ICell) {
         const tableItem = this.getTableCell(point);
 
         return tableItem?.state === "empty" && !tableItem?.shipCode;
     }
 
-    placeShip(ship: Ship) {
-        if (!this.isPositionFit(ship)) {
-            return false;
+    public placeShip({
+        ship,
+        isJustKilledShip,
+    }: {
+        ship: Ship;
+        isJustKilledShip?: boolean;
+    }) {
+        if (!isJustKilledShip && !this.isPositionFit(ship)) {
+            throw Error("ship is not in map area");
         }
 
-        const shipName = this.getShipNameByCells(ship.cells);
+        const shipName = SeaMap.getShipNameByCells(ship.cells);
         this.shipsHash[shipName] = ship;
 
         const { cells: shipCells } = ship;
 
         shipCells.forEach((shipCell) => {
-            const tableCell = this.getTableCell(shipCell);
+            const shipTableCell = this.getTableCell(shipCell);
 
-            if (!tableCell) {
-                return;
+            if (!shipTableCell) {
+                throw Error("Ship cell is outside of tableCell");
             }
 
-            tableCell.shipCode = shipName;
+            shipTableCell.shipCode = shipName;
+            shipTableCell.state = shipCell.isHit ? "hit" : "empty";
 
             getPointsAround(shipCell)
                 .flat()
@@ -191,7 +203,15 @@ export class SeaMap {
         });
     }
 
-    restoreShipByName(shipCode: ShipCode): Ship {
+    setCellState(changingCell: ICell, state: ICellState) {
+        const foundCell = this.getTableCell(changingCell);
+
+        if (foundCell) {
+            foundCell.state = state;
+        }
+    }
+
+    restoreShipByName(shipCode: IShipCode): Ship {
         const cells = this.getCellsFromShipCode(shipCode);
 
         return new Ship(
@@ -200,5 +220,32 @@ export class SeaMap {
                 isHit: this.getTableCell(cell)?.state === "hit",
             }))
         );
+    }
+
+    shootCell(cell: ICell): IShootOnMapResult {
+        let result: IShootResult = "missed";
+        let killedShip: Ship;
+        const tableItem = this.getTableCell(cell);
+
+        if (!tableItem) {
+            throw Error("Try to shoot to not existing cell");
+        }
+
+        if (tableItem.shipCode) {
+            tableItem.state = "hit";
+
+            const ship = this.getShip(tableItem.shipCode);
+            // todo rework
+            ship.damageShip(cell);
+
+            result = ship.isAlive() ? "hit" : "kill";
+            killedShip = ship;
+        }
+
+        return { shootResult: result, killedShip };
+    }
+
+    hasLiveShip() {
+        return Object.values(this.shipsHash).some((ship) => ship.isAlive());
     }
 }

@@ -1,129 +1,228 @@
-import { Cell, Enemy, ShootResult } from "common/type";
+import { ICell, IEnemy, IPlayerType, IShootResult } from "common/type";
 import { AiLogic } from "entity/AiLogic";
-import { SeaMap } from "entity/map";
+import { SeaMap, IShootOnMapResult } from "entity/map";
+import { drawSeaMapDuringFight, getCoordFromCell } from "view/SeaMapView";
+
+type IOnGameOver = (IPlayerType) => void;
+
+type FightControllerConstuctor = {
+    enemyFieldNode: HTMLElement | Element;
+    playerFieldNode: HTMLElement | Element;
+    map: {
+        [player in IPlayerType]: {
+            own: SeaMap; // карта расположения своих кораблей
+            work: SeaMap; // карта расположения кораблей противника
+        };
+    };
+    onGameOver: IOnGameOver;
+};
 
 export class FightWithAIController {
-    isPlayerTurn: boolean
+    isPlayerTurn: boolean;
+    onGameOver: IOnGameOver;
     node: {
-        enemyField: Element
-        playerField: Element
-    }
+        enemyField: HTMLElement | Element;
+        playerField: HTMLElement | Element;
+    };
     map: {
-        enemy: SeaMap
-        player: SeaMap
-    }
-    enemy: Enemy
+        [player in IPlayerType]: {
+            own: SeaMap; // карта расположения своих кораблей
+            work: SeaMap; // карта расположения кораблей противника
+            toShoot: SeaMap;
+        };
+    };
+    enemy: IEnemy;
 
-    constructor(
-        { enemyFieldNode,
-            playerFieldNode,
-            enemyMap,
-            playerMap
-        }: {
-            enemyFieldNode: Element,
-            playerFieldNode: Element,
-            enemyMap: SeaMap,
-            playerMap: SeaMap
-        }) {
-        this.isPlayerTurn = true
+    constructor({
+        enemyFieldNode,
+        playerFieldNode,
+        map,
+        onGameOver,
+    }: FightControllerConstuctor) {
+        this.isPlayerTurn = true;
+        this.onGameOver = onGameOver;
         this.node = {
             enemyField: enemyFieldNode,
             playerField: playerFieldNode,
-        }
+        };
 
         this.map = {
-            enemy: enemyMap,
-            player: playerMap,
-        }
-    
-        this.enemy = new AiLogic()
-        this.startGame()
+            enemy: {
+                own: map.enemy.own,
+                work: map.enemy.work,
+                toShoot: map.player.own,
+            },
+            player: {
+                own: map.player.own,
+                work: map.player.work,
+                toShoot: map.enemy.own,
+            },
+        };
+
+        this.enemy = new AiLogic({ workMap: this.map.enemy.work });
+        this.onPlayerFire = this.onPlayerFire.bind(this);
+
+        this.startGame();
     }
 
     playerTurn() {
-        this.node.enemyField.addEventListener('click', (e) => this.onPlayerFire(e))
+        this.node.enemyField.addEventListener("click", this.onPlayerFire);
     }
 
-    processingShoot({cellToShoot, map}: {cellToShoot: Cell, map: SeaMap}) {
-        const result = this.shootOnMap(cellToShoot, map)
+    getCurPlayerContext(playerType: IPlayerType) {
+        return {
+            workMap: this.isPlayerTurn
+                ? this.map.player.work
+                : this.map.enemy.work,
+            mapToShoot: !this.isPlayerTurn
+                ? this.map.player.own
+                : this.map.enemy.own,
+            enemyField: this.node[`${playerType}FieldNode`],
+        };
+    }
 
-        this.updateMap({ cell: cellToShoot, map, result})
+    processingShoot({
+        cellToShoot,
+        map,
+        fieldNodeToDrawResult,
+    }: {
+        cellToShoot: ICell;
+        map: SeaMap;
+        fieldNodeToDrawResult: HTMLElement | Element;
+    }) {
+        const result = map.shootCell(cellToShoot);
+        console.log(this.isPlayerTurn ? "player" : "enemy", result);
+
+        const workMap = this.isPlayerTurn
+            ? this.map.player.work
+            : this.map.enemy.work;
+
+        this.updateWorkMapAfterShoot({
+            workMap,
+            result,
+            cellToShoot,
+        });
+
+        this.updateViewMap({ fieldNode: fieldNodeToDrawResult, workMap });
 
         // this.mergeUpdateView(map, this.node.enemyField)
 
-        return result
+        return result;
     }
 
+    updateWorkMapAfterShoot({
+        workMap,
+        result,
+        cellToShoot,
+    }: {
+        workMap: SeaMap;
+        result: IShootOnMapResult;
+        cellToShoot: ICell;
+    }) {
+        const logicByResult = {
+            missed: () => {
+                workMap.setCellState(cellToShoot, "notAllowed");
+            },
+
+            hit: () => {
+                workMap.setCellState(cellToShoot, "hit");
+            },
+
+            kill: () => {
+                // workMap.setCellState(cellToShoot, "hit");
+                workMap.placeShip({
+                    ship: result.killedShip,
+                    isJustKilledShip: true,
+                });
+            },
+        };
+
+        logicByResult[result.shootResult]();
+    }
 
     onPlayerFire(e: Event) {
-        const battleCell = e.target as Element
-        if (!(battleCell).classList.contains('ship-field-cell')) {
-            return
+        const battleCell = e.target as Element;
+        if (!battleCell.classList.contains("ship-field-cell")) {
+            return;
         }
 
-        this.node.enemyField.removeEventListener('click', (e) => this.onPlayerFire(e))
+        this.node.enemyField.removeEventListener("click", this.onPlayerFire);
 
-        const cellToShoot = this.getCoordFromCell(battleCell as HTMLDivElement)
+        const cellToShoot = getCoordFromCell(battleCell as HTMLDivElement);
 
-        const result = this.processingShoot({ cellToShoot, map: this.map.enemy })
+        const result = this.processingShoot({
+            cellToShoot,
+            map: this.map.enemy.own,
+            fieldNodeToDrawResult: this.node.enemyField,
+        });
 
-        this.nextTurn(result)
+        // TODO rework common part
+        if (this.isGameOver()) {
+            this.onGameOver(this.isPlayerTurn ? "player" : "enemy");
+        } else {
+            this.nextTurn(result.shootResult);
+        }
     }
 
-    updateMap({ cell, map, result}: { cell: Cell, map: SeaMap, result: ShootResult}) {
-        console.log('TODO updateMap', cell, map, result)
-    }
-
-    getCoordFromCell(cellNode: HTMLDivElement): Cell {
-        const coord = cellNode.dataset.shipFieldCoord
-
-        const [y, x] = coord.split('-').map(n => +n - 1)
-
-        return {x, y}
+    updateViewMap({
+        workMap,
+        fieldNode,
+    }: {
+        workMap: SeaMap;
+        fieldNode: HTMLElement | Element;
+    }) {
+        drawSeaMapDuringFight({ workMap, fieldNode });
     }
 
     enemyTurn() {
-        const cellToShoot = this.enemy.chooseNextCell()
+        const cellToShoot = this.enemy.chooseNextCell();
 
-        const result = this.processingShoot({ cellToShoot, map: this.map.player })
+        const result = this.processingShoot({
+            cellToShoot,
+            map: this.map.player.own,
+            fieldNodeToDrawResult: this.node.playerField,
+        });
 
-        this.enemy.processingResult({ cell: cellToShoot, result })
+        // TODO rework common part
+        if (this.isGameOver()) {
+            this.onGameOver(this.isPlayerTurn ? "player" : "enemy");
+        } else {
+            this.enemy.processingResult({ cell: cellToShoot, result });
 
-        this.nextTurn(result)
+            this.nextTurn(result.shootResult);
+        }
     }
 
-    nextTurn(result: ShootResult) {
+    isGameOver(): boolean {
+        const curMapToShoot = this.isPlayerTurn
+            ? this.map.player.toShoot
+            : this.map.enemy.toShoot;
+
+        return !curMapToShoot.hasLiveShip();
+    }
+
+    nextTurn(result: IShootResult) {
         if (result === "missed") {
-            this.changeCurPlayer()
+            this.changeCurPlayer();
         }
 
-        this.curPlayerTurn()
+        this.curPlayerTurn();
     }
 
     curPlayerTurn() {
-        console.log('curPlayerTurn turn',this.isPlayerTurn)
+        // console.log("curPlayerTurn turn", this.isPlayerTurn);
         if (this.isPlayerTurn) {
-            this.playerTurn()
+            this.playerTurn();
         } else {
-            this.enemyTurn()
+            this.enemyTurn();
         }
     }
 
     startGame() {
-        this.curPlayerTurn()
+        this.curPlayerTurn();
     }
 
     changeCurPlayer() {
-        this.isPlayerTurn = !this.isPlayerTurn
-    }
-
-    shootOnMap(cell: Cell, map: SeaMap): ShootResult {
-        console.log('TODO shootOnMap', cell, map)
-
-        return 'missed'
-    }
-
-    mergeUpdateView(map: SeaMap, node: Element): void {
-        console.log('TODO mergeUpdateView', map, node)
+        this.isPlayerTurn = !this.isPlayerTurn;
     }
 }

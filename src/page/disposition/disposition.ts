@@ -1,25 +1,44 @@
-
+import { getCloneOfTemplate, pageMountingDecorator } from "common/pageUtils";
 import { SeaMap } from "entity/map";
-import { PageScript } from "page/type";
-import { drawField, placeShipByDisposition } from "view/SeaMapView";
+import { IPageScript } from "page/type";
+import { IState } from "state/type";
+import { drawField, drawSeaMap } from "view/SeaMapView";
 
-export const initDispositionScreen: PageScript = function ({ state, onGoNext }) {
-    const fieldNode = document.getElementById('field');
+type IMakeNewRandomMap = {
+    state: IState;
+    fieldNode: HTMLElement;
+    clean?: boolean;
+};
+
+function makeNewRandomMap({ state, fieldNode, clean }: IMakeNewRandomMap) {
+    state.map.player.own = new SeaMap({ withRandomShips: true });
+    drawSeaMap({ fieldNode, map: state.map.player.own, clean });
+}
+
+export const dispositionScreen: IPageScript = function ({ state, onGoNext }) {
+    const dispositionPageTemplate = getCloneOfTemplate("screen-place-template");
+
+    const fieldNode = dispositionPageTemplate.getElementById("field");
 
     drawField(fieldNode);
-    
-    state.userMap = new SeaMap({ withRandomShips: true });
 
-    placeShipByDisposition({fieldNode, seaMap: state.userMap})
+    makeNewRandomMap({ fieldNode, state });
 
-    const autoPlaceButton = document.getElementById('autoPlaceButton');
-    const goToFightButton = document.getElementById('startFightButton');
+    const autoPlaceButton =
+        dispositionPageTemplate.getElementById("autoPlaceButton");
+    const goToFightButton =
+        dispositionPageTemplate.getElementById("startFightButton");
 
     const autoPlaceButtonOnClick = () => {
-        state.userMap.createRandomShipDisposition();
-        placeShipByDisposition({seaMap: state.userMap, fieldNode})
-    }
+        makeNewRandomMap({ fieldNode, state, clean: true });
+    };
 
-    autoPlaceButton.addEventListener('click', autoPlaceButtonOnClick)
-    goToFightButton.addEventListener('click', () => onGoNext())
-}
+    autoPlaceButton.addEventListener("click", autoPlaceButtonOnClick);
+    goToFightButton.addEventListener("click", () => {
+        onGoNext();
+    });
+
+    return dispositionPageTemplate;
+};
+
+export const initDispositionScreen = pageMountingDecorator(dispositionScreen);

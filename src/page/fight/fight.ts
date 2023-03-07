@@ -1,30 +1,62 @@
+import { getCloneOfTemplate, pageMountingDecorator } from "common/pageUtils";
 import { SeaMap } from "entity/map";
-import { PageScript } from "page/type";
-import { drawField, placeShipByDisposition } from "view/SeaMapView";
+import { IPageScript } from "page/type";
+import { drawField, drawSeaMap } from "view/SeaMapView";
 import { FightWithAIController } from "./FightController";
 
-export const initFightScreen: PageScript = ({ state }) => {
+function prepareBattleFieldNode(pageTemplate: DocumentFragment) {
     const node = {
-        userMap: document.getElementById("userDispositionField"),
-        enemyMap: document.getElementById("enemyDispositionField"),
+        userMap: pageTemplate.querySelector(".user-field"),
+        enemyMap: pageTemplate.querySelector(".enemy-field"),
     };
 
     drawField(node.userMap);
     drawField(node.enemyMap);
 
-    placeShipByDisposition({ fieldNode: node.userMap, seaMap: state.userMap });
+    return node;
+}
 
-    state.enemyMap = new SeaMap({ withRandomShips: true });
+export const fightScreen: IPageScript = ({ state, onGoNext }) => {
+    const pageTemplate = getCloneOfTemplate("screen-fight-template");
 
-    placeShipByDisposition({
-        fieldNode: node.enemyMap,
-        seaMap: state.enemyMap,
-    });
+    const node = prepareBattleFieldNode(pageTemplate);
+
+    state.map.player.work = new SeaMap();
+    state.map.enemy = {
+        own: new SeaMap({ withRandomShips: true }),
+        work: new SeaMap(),
+    };
+
+    drawSeaMap({ fieldNode: node.userMap, map: state.map.player.own });
+    drawSeaMap({ fieldNode: node.enemyMap, map: state.map.player.work });
+
+    const onGameOver = (winPlayer) => {
+        const isWantToRestart = confirm(
+            `${winPlayer} is win. Game over. Do you like to start new game?`
+        );
+
+        if (isWantToRestart) {
+            onGoNext();
+        }
+    };
 
     new FightWithAIController({
+        onGameOver: onGameOver,
         enemyFieldNode: node.enemyMap,
-        enemyMap: state.enemyMap,
         playerFieldNode: node.userMap,
-        playerMap: state.userMap,
+        map: {
+            enemy: {
+                own: state.map.enemy.own!,
+                work: state.map.enemy.work!,
+            },
+            player: {
+                own: state.map.player.own!,
+                work: state.map.player.work!,
+            },
+        },
     });
+
+    return pageTemplate;
 };
+
+export const initFightScreen = pageMountingDecorator(fightScreen);

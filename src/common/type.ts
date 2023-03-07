@@ -1,19 +1,29 @@
-export type SCREENS_NAMES = 'start' | 'place' | 'fight'
+import { IShootOnMapResult } from "entity/map";
 
-export type AxisDirection = 'vertical' | 'horizontal'
+export type ISCREENS_NAMES = "start" | "place" | "fight";
 
-export type ShootResult = 'missed' | 'hit' | 'kill'
+export type IAxisDirection = "vertical" | "horizontal";
 
-export interface Cell {
-    x: number,
-    y: number
+export type IShootResult = "missed" | "hit" | "kill";
+
+export type IPlayerType = "enemy" | "player";
+
+export interface ICell {
+    x: number;
+    y: number;
 }
 
-export interface ShipCell extends Cell {
-    isHit: boolean
+export interface IShipCell extends ICell {
+    isHit: boolean;
 }
 
-export interface Enemy {
-    chooseNextCell(): Cell
-    processingResult({ cell, result }: { cell: Cell, result: ShootResult }): void
+export interface IEnemy {
+    chooseNextCell(): ICell;
+    processingResult({
+        cell,
+        result,
+    }: {
+        cell: ICell;
+        result: IShootOnMapResult;
+    }): void;
 }

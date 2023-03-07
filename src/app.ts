@@ -1,29 +1,38 @@
-import { switchActiveScreen } from 'common/pageUtils';
-import { initFightScreen } from 'page/fight/fight';
-import { State } from 'state/type';
-import { initDispositionScreen } from './page/disposition/disposition'
-import { initStartScreen } from './page/start/start'
+import { initFightScreen } from "page/fight/fight";
+import { IState } from "state/type";
+import { initDispositionScreen } from "./page/disposition/disposition";
+import { initStartScreen } from "./page/start/start";
 
-const state: State = {}
+function getInitalState(): IState {
+    return {
+        rootNode: document.getElementById("root"),
+        map: {
+            enemy: {},
+            player: {},
+        },
+    };
+}
+
+const state: IState = getInitalState();
 
 export function app() {
     initStartScreen({
         onGoNext: goToDispositionScreen,
-        state
+        state,
     });
 
     function goToDispositionScreen() {
-        switchActiveScreen('place')
         initDispositionScreen({
             onGoNext: goToFightScreen,
-            state
+            state,
         });
     }
 
     function goToFightScreen() {
-        switchActiveScreen('fight')
-        initFightScreen({ state })
+        initFightScreen({ state, onGoNext: restartGame });
     }
 
-    switchActiveScreen('start')
+    function restartGame() {
+        goToDispositionScreen();
+    }
 }

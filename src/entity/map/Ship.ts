@@ -1,19 +1,19 @@
-import { AxisDirection, Cell, ShipCell } from "common/type";
+import { IAxisDirection, ICell, IShipCell } from "common/type";
 import { axisByDirection, defineDirecton, getRandomValue } from "common/utils";
 
 export interface IDefaultShipConstructor {
-    startPoint: Cell;
-    direction: AxisDirection;
+    startPoint: ICell;
+    direction: IAxisDirection;
     size: number;
 }
 
-export type IShipConstructorFromCells = ShipCell[];
+export type IShipConstructorFromCells = IShipCell[];
 
 export class Ship {
-    startPoint: Cell;
-    direction: AxisDirection;
+    startPoint: ICell;
+    direction: IAxisDirection;
     size: number;
-    cells: ShipCell[];
+    cells: IShipCell[];
 
     constructor(opt: IDefaultShipConstructor);
     constructor(cells: IShipConstructorFromCells);
@@ -29,7 +29,7 @@ export class Ship {
         }
     }
 
-    createShipFromCells(cells: ShipCell[]) {
+    createShipFromCells(cells: IShipCell[]) {
         this.cells = cells;
         this.size = cells.length;
 
@@ -48,8 +48,8 @@ export class Ship {
         this.startPoint = {
             [ortogonal]: cells[0][ortogonal],
             [main]: mainMinValue,
-        } as unknown as Cell;
-        console.log({ startPoint: this.startPoint });
+        } as unknown as ICell;
+        // console.log({ startPoint: this.startPoint });
     }
 
     getShipCells() {
@@ -77,7 +77,17 @@ export class Ship {
         return this.cells.some((c) => !c.isHit);
     }
 
-    static getRandomShipParams(size: number): Ship {
+    damageShip(cell: ICell) {
+        const damagedCell = this.cells.find(
+            ({ x, y }) => cell.x === x && cell.y === y
+        );
+
+        if (damagedCell) {
+            damagedCell.isHit = true;
+        }
+    }
+
+    static getRandomShip(size: number): Ship {
         return new Ship({
             startPoint: {
                 x: getRandomValue(0, 9 - size),
