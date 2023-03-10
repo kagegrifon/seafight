@@ -1,1 +1,3 @@
-#This is repository of game Sea Fights
+#This is game Sea Fights
+
+To start project `npm run start`
